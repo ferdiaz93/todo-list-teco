@@ -11,6 +11,11 @@ function App() {
     setSavedTasks([...savedTasks]);
   }
 
+  const onDelete = (taskId) => {
+    const updatedTask = savedTasks.filter(task => task.id !== taskId);
+    setSavedTasks([...updatedTask]);
+  }
+
   const onSubmitEdit = (editedTask) => {
     const updatedTasks = savedTasks.map(task => {
       if(task.id === editedTask.id) task = editedTask
@@ -26,7 +31,7 @@ function App() {
       </header>
       <main>
         <TaskForm onSubmitTask={onSubmitTask}/>
-        <TasksList savedTasks={savedTasks} onSubmitEdit={onSubmitEdit}/>
+        <TasksList savedTasks={savedTasks} onSubmitEdit={onSubmitEdit} onDelete={onDelete}/>
       </main>
     </div>
   );

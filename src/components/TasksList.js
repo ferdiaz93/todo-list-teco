@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Formik, Field, Form } from 'formik';
 
-const TasksList = ({ savedTasks, onSubmitEdit }) => {
+const TasksList = ({ savedTasks, onSubmitEdit, onDelete }) => {
     const [ editingTask, setEditingTask ] = useState(null);
 
     const validate = value => {
@@ -44,15 +44,23 @@ const TasksList = ({ savedTasks, onSubmitEdit }) => {
                                         <input className="form-check-input" type="checkbox" role="switch" checked={task.finished} onChange={(e) => onSwitchChange(e, task)} />
                                         <label className="form-check-label" htmlFor="flexSwitchCheckChecked">{task.finished ? "Completed" : "Incompleted"}</label>
                                     </div>
-                                    <button 
-                                        type="button" 
-                                        className="btn btn-primary" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#editModal" 
-                                        onClick={() => handleEditButton(task)}
-                                        disabled={task.finished}>
-                                        Edit
-                                    </button>
+                                    <div className="buttons-container">
+                                        <button 
+                                            type="button" 
+                                            className="btn btn-primary" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#editModal" 
+                                            onClick={() => handleEditButton(task)}
+                                            disabled={task.finished}>
+                                            Edit
+                                        </button>
+                                        <button 
+                                            type="button" 
+                                            className="btn btn-primary" 
+                                            onClick={() => onDelete(task.id)}>
+                                            Delete
+                                        </button>
+                                    </div>
                                 </div>
                                 <div className="card-body">
                                     <p className="card-text">{task.description}</p>
