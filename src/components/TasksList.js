@@ -20,13 +20,15 @@ const TasksList = ({ savedTasks, onSubmitEdit }) => {
         setEditingTask(task);
     }
 
-    const onSwitchChange = (e) => {
+    const onSwitchChange = (e, task) => {
         console.log(e.target.checked);
+        task.finished = e.target.checked;
+        onSubmitEdit(task);
     }
     
     const editTask = (values, actions) => {
         values.id = editingTask.id;
-        onSubmitEdit(values)
+        onSubmitEdit(values);
     }
     
     return (
@@ -35,15 +37,21 @@ const TasksList = ({ savedTasks, onSubmitEdit }) => {
                 <ol>
                     {savedTasks.map((task, index) => (
                         <li className="task-label" key={index}>
-                            <div className={`card text-bg-${task.priority} mb-3`}>
+                            <div className={`card text-bg-${task.priority} ${task.finished ? "completed" : ""} mb-3`}>
                                 <div className="card-header d-flex align-items-center justify-content-between">
                                     <h2>{task.title}</h2>
                                     <div className="form-check form-switch">
-                                        <input className="form-check-input" type="checkbox" role="switch" checked={task.finished} onChange={onSwitchChange} />
+                                        <input className="form-check-input" type="checkbox" role="switch" checked={task.finished} onChange={(e) => onSwitchChange(e, task)} />
                                         <label className="form-check-label" htmlFor="flexSwitchCheckChecked">{task.finished ? "Completed" : "Incompleted"}</label>
                                     </div>
-                                    <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal" onClick={() => handleEditButton(task)}>
-                                        Edit task
+                                    <button 
+                                        type="button" 
+                                        className="btn btn-primary" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#editModal" 
+                                        onClick={() => handleEditButton(task)}
+                                        disabled={task.finished}>
+                                        Edit
                                     </button>
                                 </div>
                                 <div className="card-body">
