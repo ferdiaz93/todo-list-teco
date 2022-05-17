@@ -1,5 +1,6 @@
 import React from 'react'
 import { Formik, Field, Form } from 'formik';
+import { v4 as uuidv4 } from 'uuid';
 
 const TaskForm = ({ onSubmitTask }) => {
 
@@ -11,7 +12,7 @@ const TaskForm = ({ onSubmitTask }) => {
         return errorMessage;
     };
     const saveTask = (task, actions) => {
-        console.log(task);
+        task.id = uuidv4();
         onSubmitTask(task)
     }
 

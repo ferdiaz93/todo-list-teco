@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Formik, Field, Form } from 'formik';
 
-const TasksList = ({ savedTasks }) => {
+const TasksList = ({ savedTasks, onSubmitEdit }) => {
     const [ editingTask, setEditingTask ] = useState(null);
 
     const validate = value => {
@@ -25,9 +25,10 @@ const TasksList = ({ savedTasks }) => {
     }
     
     const editTask = (values, actions) => {
-        console.log(values);
+        values.id = editingTask.id;
+        onSubmitEdit(values)
     }
-
+    
     return (
         <section className="tasks-container">
             {savedTasks?.length ?
@@ -41,7 +42,7 @@ const TasksList = ({ savedTasks }) => {
                                         <input className="form-check-input" type="checkbox" role="switch" checked={task.finished} onChange={onSwitchChange} />
                                         <label className="form-check-label" htmlFor="flexSwitchCheckChecked">{task.finished ? "Completed" : "Incompleted"}</label>
                                     </div>
-                                    <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onClick={() => handleEditButton(task)}>
+                                    <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal" onClick={() => handleEditButton(task)}>
                                         Edit task
                                     </button>
                                 </div>
@@ -52,18 +53,23 @@ const TasksList = ({ savedTasks }) => {
                         </li>
                     ))}
                 </ol>
-                : null}
-            <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            : null}
+            <div className="modal fade" id="editModal" tabIndex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
                 <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">Editar Tarea</h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                            {editingTask ? 
+                    {editingTask ? 
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title" id="editModalLabel">Editar Tarea</h5>
+                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div className="modal-body">
                                 <Formik
-                                    initialValues={{ title: "", description: "", priority: "low", finished: false }}
+                                    initialValues={{ 
+                                        title: editingTask.title, 
+                                        description: editingTask.description, 
+                                        priority: editingTask.priority, 
+                                        finished: editingTask.finished 
+                                    }}
                                     onSubmit={async (values, actions) => editTask(values, actions)}>
                                     {({ errors, touched }) => (
                                         <Form>
@@ -73,8 +79,7 @@ const TasksList = ({ savedTasks }) => {
                                                     validate={validate}
                                                     name="title"
                                                     placeholder="What do you need to remember?"
-                                                    className={`form-control ${errors.title && touched.title ? "is-invalid" : ""}`}
-                                                    value={editingTask.title}/>
+                                                    className={`form-control ${errors.title && touched.title ? "is-invalid" : ""}`}/>
                                                 {errors.title && touched.title ? <div className="invalid-feedback">{errors.title}</div> : null}
                                             </div>
                                             <div>
@@ -84,30 +89,31 @@ const TasksList = ({ savedTasks }) => {
                                                     name="description"
                                                     placeholder="Enter your description"
                                                     as="textarea"
-                                                    className={`form-control ${errors.description && touched.description ? "is-invalid" : ""}`} 
-                                                    value={editingTask.description} />
+                                                    className={`form-control ${errors.description && touched.description ? "is-invalid" : ""}`} />
                                                 {errors.description && touched.description ? <div className="invalid-feedback">{errors.description}</div> : null}
                                             </div>
                                             <div>
                                                 <label htmlFor="description">Priority</label>
-                                                <Field id="priority" name="priority" as="select" className="form-select" value={editingTask.priority}>
+                                                <Field id="priority" name="priority" as="select" className="form-select">
                                                     <option value="light">Low</option>
                                                     <option value="warning">Medium</option>
                                                     <option value="danger">High</option>
                                                 </Field>
                                             </div>
-
-                                            <button type="submit" className="btn btn-primary">Create</button>
+                                            <div className="modal-footer">
+                                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={handleCancelEdit}>Close</button>
+                                                <button 
+                                                    type="submit" 
+                                                    className="btn btn-primary" 
+                                                    data-bs-dismiss="modal" 
+                                                    disabled={errors.description || errors.title}>Save changes</button>
+                                            </div>
                                         </Form>
                                     )}
                                 </Formik>
-                            : null}
+                            </div>
                         </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" onClick={handleCancelEdit}>Close</button>
-                            <button type="button" className="btn btn-primary">Save changes</button>
-                        </div>
-                    </div>
+                    : null}
                 </div>
             </div>
         </section>
